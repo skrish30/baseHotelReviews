@@ -96,19 +96,36 @@ io.on('connection', function(socket) {
     session_id: sessionId,
     input: {
       'message_type': 'text',
-      'text': msg
+      'text': msg,
+      options : {
+        return_context : true
+      }
       }
     })
     .then(res => {
       reply=(res.output.generic[0].text);
       //reply = (JSON.stringify(res, null, 2));
       //console.log(reply);
-      context = '';
-
+      console.log(res.context.skills);
+      var skills;
+      (res.context.hasOwnProperty("skills")) ?  skills = res.context.skills["main skill"].user_defined : skills =false;
+      
+      //console.log(res.context.skills["main skill"].user_defined);
       var queryString = "";
       var answer = [];
       var city = "";
-      io.emit('chat message',reply)
+      //console.log(skills);
+      if(skills){
+        if(skills.best){
+          console.log('best');
+        } else if(skills.list){
+          console.log('list');
+        } else if(skills.hotel){
+          console.log('hotel');
+        } 
+      } else{
+        io.emit('chat message',"Hotel BOT: " + reply);
+      }
 
     })
     .catch(err => {
