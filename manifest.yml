@@ -1,5 +1,5 @@
 ---
 applications:
-- name: xxxxx
+- name: skrish-hotel-reviews
   instances: 1
   memory: 256M

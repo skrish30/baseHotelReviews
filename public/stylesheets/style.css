@@ -129,7 +129,7 @@ ul {
 
 /* Input */
 
-/*.inputMessage {
+.inputMessage {
   border: 10px solid #000;
   bottom: 0;
   height: 60px;
@@ -139,4 +139,4 @@ ul {
   position: absolute;
   right: 0;
   width: 100%
-}*/
+}
