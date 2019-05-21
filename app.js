@@ -106,7 +106,7 @@ io.on('connection', function(socket) {
       reply=(res.output.generic[0].text);
       //reply = (JSON.stringify(res, null, 2));
       //console.log(reply);
-      console.log(res.context.skills);
+      
       var skills;
       (res.context.hasOwnProperty("skills")) ?  skills = res.context.skills["main skill"].user_defined : skills =false;
       
@@ -118,6 +118,75 @@ io.on('connection', function(socket) {
       if(skills){
         if(skills.best){
           console.log('best');
+          console.log(skills.best);
+          switch(skills.best){
+            case "All":
+            queryDiscovery("term(hotel,count:50).average(enriched_text.sentiment.document.score)", (err,queryResults) =>{
+              console.log(err+"I am here");
+              if(err){
+                console.log(err);
+              }
+            
+              queryResults = queryResults.aggregations[0].results;
+              console.log(queryResults)
+              findBestHotels(queryResults, (hotel,sentiment)=>{
+                  console.log( "The best hotel overall is " + hotel.replace(/_/g," ").replace(/\b\w/g, l => l.toUpperCase())  
+                    + "with an average sentiment of " + sentiment.toFixed(2));
+              });
+            });
+              break;
+            case "new-york-city":
+            queryDiscovery("filter(city::"+skills.best+").term(hotel,count:50).average(enriched_text.sentiment.document.score)", (err,queryResults) =>{
+              console.log(err+"I am here");
+              console.log(queryResults);
+            
+              if(err){
+                console.log(err);
+              }
+            
+              queryResults = queryResults.aggregations[0].aggregations[0].results;
+              console.log(queryResults)
+              findBestHotels(queryResults, (hotel,sentiment)=>{
+                  console.log( "The best hotel in New York City is " + hotel.replace(/_/g," ").replace(/\b\w/g, l => l.toUpperCase())  
+                    + "with an average sentiment of " + sentiment.toFixed(2));
+              });
+            });
+              break;
+            case "san-francisco":
+            queryDiscovery("filter(city::"+skills.best+").term(hotel,count:50).average(enriched_text.sentiment.document.score)", (err,queryResults) =>{
+              console.log(err+"I am here");
+              console.log(queryResults);
+            
+              if(err){
+                console.log(err);
+              }
+            
+              queryResults = queryResults.aggregations[0].aggregations[0].results;
+              console.log(queryResults)
+              findBestHotels(queryResults, (hotel,sentiment)=>{
+                  console.log( "The best hotel in San Francisco is " + hotel.replace(/_/g," ").replace(/\b\w/g, l => l.toUpperCase())  
+                    + "with an average sentiment of " + sentiment.toFixed(2));
+              });
+            });
+              break;
+            case "chicago":
+            queryDiscovery("filter(city::"+skills.best+").term(hotel,count:50).average(enriched_text.sentiment.document.score)", (err,queryResults) =>{
+              console.log(err+"I am here");
+              console.log(queryResults);
+            
+              if(err){
+                console.log(err);
+              }
+            
+              queryResults = queryResults.aggregations[0].aggregations[0].results;
+              console.log(queryResults)
+              findBestHotels(queryResults, (hotel,sentiment)=>{
+                  console.log( "The best hotel in Chicago is " + hotel.replace(/_/g," ").replace(/\b\w/g, l => l.toUpperCase())  
+                    + "with an average sentiment of " + sentiment.toFixed(2));
+              });
+            });
+              break;
+          }
         } else if(skills.list){
           console.log('list');
         } else if(skills.hotel){
@@ -145,3 +214,44 @@ app.get('/', function(req, res){
 /*****************************
     Function Definitions
 ******************************/
+function queryDiscovery(query,callback){
+  //function to query Discovery
+  let queryParams ={
+    environment_id: process.env.ENVIRONMENT_ID,
+    collection_id: process.env.COLLECTION_ID,
+    aggregation: query
+  };
+  console.log(queryParams);
+  discovery.query(queryParams)
+    .then(queryResponse =>{
+      //console.log(JSON.stringify(queryResponse, null, 2));
+      /*
+      fsPromises.writeFile("data.txt", JSON.stringify(queryResponse, null, 2))
+        .then(()=> console.log("success"))
+        .catch(()=> console.log("failure"))
+      */
+      console.log('successful query');
+      callback(null,queryResponse);
+    })
+    .catch(err =>{
+      console.log('error',err);
+      callback(err,null);
+    });
+};
+
+function findBestHotels(queryResults,callback){
+  //Function to find the best hotel
+
+  let highestSent =0;
+  let currentSent;
+  let bestHotel;
+  for (let index = 0; index < queryResults.length; index++) {
+    currentSent = queryResults[index].aggregations[0].value;
+    if(currentSent > highestSent){
+      highestSent = currentSent;
+      bestHotel = queryResults[index].key;
+    }
+  }
+  callback(bestHotel, highestSent);
+}
+
