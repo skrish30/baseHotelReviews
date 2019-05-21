@@ -130,7 +130,7 @@ io.on('connection', function(socket) {
               queryResults = queryResults.aggregations[0].results;
               console.log(queryResults)
               findBestHotels(queryResults, (hotel,sentiment)=>{
-                  console.log( "The best hotel overall is " + hotel.replace(/_/g," ").replace(/\b\w/g, l => l.toUpperCase())  
+                  io.emit('chat message', "The best hotel overall is " + hotel.replace(/_/g," ").replace(/\b\w/g, l => l.toUpperCase())  
                     + "with an average sentiment of " + sentiment.toFixed(2));
               });
             });
@@ -147,7 +147,7 @@ io.on('connection', function(socket) {
               queryResults = queryResults.aggregations[0].aggregations[0].results;
               console.log(queryResults)
               findBestHotels(queryResults, (hotel,sentiment)=>{
-                  console.log( "The best hotel in New York City is " + hotel.replace(/_/g," ").replace(/\b\w/g, l => l.toUpperCase())  
+                  io.emit('chat message', "The best hotel in New York City is " + hotel.replace(/_/g," ").replace(/\b\w/g, l => l.toUpperCase())  
                     + "with an average sentiment of " + sentiment.toFixed(2));
               });
             });
@@ -164,7 +164,7 @@ io.on('connection', function(socket) {
               queryResults = queryResults.aggregations[0].aggregations[0].results;
               console.log(queryResults)
               findBestHotels(queryResults, (hotel,sentiment)=>{
-                  console.log( "The best hotel in San Francisco is " + hotel.replace(/_/g," ").replace(/\b\w/g, l => l.toUpperCase())  
+                  io.emit('chat message', "The best hotel in San Francisco is " + hotel.replace(/_/g," ").replace(/\b\w/g, l => l.toUpperCase())  
                     + "with an average sentiment of " + sentiment.toFixed(2));
               });
             });
@@ -181,7 +181,7 @@ io.on('connection', function(socket) {
               queryResults = queryResults.aggregations[0].aggregations[0].results;
               console.log(queryResults)
               findBestHotels(queryResults, (hotel,sentiment)=>{
-                  console.log( "The best hotel in Chicago is " + hotel.replace(/_/g," ").replace(/\b\w/g, l => l.toUpperCase())  
+                  io.emit('chat message', "The best hotel in Chicago is " + hotel.replace(/_/g," ").replace(/\b\w/g, l => l.toUpperCase())  
                     + "with an average sentiment of " + sentiment.toFixed(2));
               });
             });
