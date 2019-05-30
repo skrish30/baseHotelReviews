@@ -103,7 +103,15 @@ io.on('connection', function(socket) {
       }
     })
     .then(res => {
-      reply=(res.output.generic[0].text);
+      if(res.output.generic[0].options){
+        reply = [];
+        res.output.generic[0].options.forEach(option => {
+        reply.push(option.label);
+        });
+      } else if(res.output.generic[0].text){
+        reply=(res.output.generic[0].text);
+      }
+    
       //reply = (JSON.stringify(res, null, 2));
       //console.log(reply);
       
@@ -114,84 +122,9 @@ io.on('connection', function(socket) {
       var queryString = "";
       var answer = [];
       var city = "";
-      //console.log(skills);
+
       if(skills){
-        if(skills.best){
-          console.log('best');
-          console.log(skills.best);
-          switch(skills.best){
-            case "All":
-            queryDiscovery("term(hotel,count:50).average(enriched_text.sentiment.document.score)", (err,queryResults) =>{
-              console.log(err+"I am here");
-              if(err){
-                console.log(err);
-              }
-            
-              queryResults = queryResults.aggregations[0].results;
-              console.log(queryResults)
-              findBestHotels(queryResults, (hotel,sentiment)=>{
-                  io.emit('chat message', "The best hotel overall is " + hotel.replace(/_/g," ").replace(/\b\w/g, l => l.toUpperCase())  
-                    + "with an average sentiment of " + sentiment.toFixed(2));
-              });
-            });
-              break;
-            case "new-york-city":
-            queryDiscovery("filter(city::"+skills.best+").term(hotel,count:50).average(enriched_text.sentiment.document.score)", (err,queryResults) =>{
-              console.log(err+"I am here");
-              console.log(queryResults);
-            
-              if(err){
-                console.log(err);
-              }
-            
-              queryResults = queryResults.aggregations[0].aggregations[0].results;
-              console.log(queryResults)
-              findBestHotels(queryResults, (hotel,sentiment)=>{
-                  io.emit('chat message', "The best hotel in New York City is " + hotel.replace(/_/g," ").replace(/\b\w/g, l => l.toUpperCase())  
-                    + "with an average sentiment of " + sentiment.toFixed(2));
-              });
-            });
-              break;
-            case "san-francisco":
-            queryDiscovery("filter(city::"+skills.best+").term(hotel,count:50).average(enriched_text.sentiment.document.score)", (err,queryResults) =>{
-              console.log(err+"I am here");
-              console.log(queryResults);
-            
-              if(err){
-                console.log(err);
-              }
-            
-              queryResults = queryResults.aggregations[0].aggregations[0].results;
-              console.log(queryResults)
-              findBestHotels(queryResults, (hotel,sentiment)=>{
-                  io.emit('chat message', "The best hotel in San Francisco is " + hotel.replace(/_/g," ").replace(/\b\w/g, l => l.toUpperCase())  
-                    + "with an average sentiment of " + sentiment.toFixed(2));
-              });
-            });
-              break;
-            case "chicago":
-            queryDiscovery("filter(city::"+skills.best+").term(hotel,count:50).average(enriched_text.sentiment.document.score)", (err,queryResults) =>{
-              console.log(err+"I am here");
-              console.log(queryResults);
-            
-              if(err){
-                console.log(err);
-              }
-            
-              queryResults = queryResults.aggregations[0].aggregations[0].results;
-              console.log(queryResults)
-              findBestHotels(queryResults, (hotel,sentiment)=>{
-                  io.emit('chat message', "The best hotel in Chicago is " + hotel.replace(/_/g," ").replace(/\b\w/g, l => l.toUpperCase())  
-                    + "with an average sentiment of " + sentiment.toFixed(2));
-              });
-            });
-              break;
-          }
-        } else if(skills.list){
-          console.log('list');
-        } else if(skills.hotel){
-          console.log('hotel');
-        } 
+        io.emit('chat message',"Hotel BOT: " + reply);
       } else{
         io.emit('chat message',"Hotel BOT: " + reply);
       }
